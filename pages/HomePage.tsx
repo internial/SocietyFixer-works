@@ -123,4 +123,9 @@ export default function HomePage() {
                                 ) : 'Load More'}
                             </button>
                         )}
-                        
+                    </div>
+                </>
+            )}
+        </div>
+    );
+}
