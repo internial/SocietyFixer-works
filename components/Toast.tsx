@@ -15,7 +15,8 @@ interface ToastProps {
 export default function Toast({ toast, onClose }: ToastProps) {
     const { id, message, type, duration = 5000 } = toast;
     const [show, setShow] = useState(false);
-    const timerRef = useRef<NodeJS.Timeout | null>(null);
+    // FIX: Replaced NodeJS.Timeout with ReturnType<typeof setTimeout> to ensure compatibility with browser environments where setTimeout returns a number, not a NodeJS.Timeout object.
+    const timerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
 
     // Effect to trigger the fade-in animation
     useEffect(() => {

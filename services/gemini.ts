@@ -14,6 +14,14 @@ export const moderateContent = async (text: string): Promise<{ isSafe: boolean; 
     return { isSafe: true };
   }
 
+  // The API key is sourced from the environment variable `process.env.API_KEY`.
+  // If it's not available, moderation is skipped to avoid breaking functionality.
+  if (!process.env.API_KEY) {
+    console.warn("Gemini API key is not configured in the environment. Moderation is being skipped.");
+    return { isSafe: true };
+  }
+
+
   // Sanitize HTML from policies to check only text content
   const textOnly = text.replace(/<[^>]*>?/gm, ' ');
 

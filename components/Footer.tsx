@@ -25,8 +25,11 @@ export default function Footer() {
           <li className="list-inline-item mx-2">
             <Link to="/privacy-policy" className="text-secondary text-decoration-none text-sm">Privacy Policy</Link>
           </li>
+           <li className="list-inline-item mx-2">
+            <Link to="/documentation" className="text-secondary text-decoration-none text-sm">Developer Documentation</Link>
+          </li>
         </ul>
-        <small>© {new Date().getFullYear()} SocietyFixer. All Rights Reserved.</small>
+        <small className="d-block mb-2">© {new Date().getFullYear()} SocietyFixer. All Rights Reserved.</small>
       </div>
     </footer>
   );

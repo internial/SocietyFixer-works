@@ -92,7 +92,10 @@ export default function HomePage() {
             {loading ? (
                 <Spinner />
             ) : error ? (
-                <p className="text-center text-danger mt-5">{error}</p>
+                <div className="alert alert-danger text-center mt-5" role="alert">
+                    <h5 className="alert-heading">An Error Occurred</h5>
+                    <p className="mb-0">{error}</p>
+                </div>
             ) : campaigns.length === 0 ? (
                 <div className="text-center p-5 bg-body-secondary rounded-3" role="region" aria-label="No results">
                     <h4>No campaigns found.</h4>
@@ -120,12 +123,4 @@ export default function HomePage() {
                                 ) : 'Load More'}
                             </button>
                         )}
-                        {!hasMore && campaigns.length > 0 && (
-                            <p className="text-secondary" role="status">You've reached the end.</p>
-                        )}
-                    </div>
-                </>
-            )}
-        </div>
-    );
-}
+                        

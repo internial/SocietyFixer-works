@@ -80,5 +80,5 @@ export default function QuillEditor({ value, onChange, ariaLabelledBy }: QuillEd
         }
     }, [value, onChange, ariaLabelledBy]);
 
-    return <div ref={editorRef} className="quill-light-theme rounded-2"></div>;
+    return <div ref={editorRef} className="quill-custom-theme"></div>;
 };

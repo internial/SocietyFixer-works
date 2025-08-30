@@ -8,9 +8,9 @@
 SocietyFixer is a platform designed to lower the barrier to entry for political candidates by providing a free, policy-focused space to connect with voters.
 
 - Public Campaign Directory: A searchable and filterable homepage displaying all campaigns.
-- User Authentication: Secure user registration, login, password reset, and session management.
+- User Authentication: Secure user registration, login, and session management.
 - Campaign CRUD Operations: Authenticated users can create, read, update, and delete their own campaign pages.
-- Rich Text Policy Editor: A Quill.js-based editor for candidates to detail their proposed policies with formatting options.
+- Rich Text Policy Editor: A Quill.js-based editor for candidates to format their proposed policies with headings, lists, and links.
 - Secure File Uploads: Candidates can upload a portrait image and a PDF resume, which are stored securely in Supabase Storage.
 - AI-Powered Content Moderation: User-submitted text (e.g., candidate name, policies) is analyzed by the Google Gemini API to prevent harmful content.
 - Responsive & Accessible Design: The UI is built with Bootstrap to be fully responsive and includes ARIA attributes for accessibility.
@@ -88,7 +88,7 @@ The application follows a modern Jamstack architecture, separating the frontend 
     pages/
     ------
     - AboutPage.tsx: The "About Us" page, explaining the mission and vision behind SocietyFixer.
-    - AuthPage.tsx: The page that handles user login, registration, and password recovery.
+    - AuthPage.tsx: The page that handles user login and registration.
     - CampaignDetailPage.tsx: Displays the full, detailed information for a single political campaign.
     - CofounderPage.tsx: The page containing information about the search for technical cofounders.
     - ContactPage.tsx: The "Contact Us" page, providing an email address for user inquiries.
@@ -98,7 +98,6 @@ The application follows a modern Jamstack architecture, separating the frontend 
     - HomePage.tsx: The main landing page that displays a searchable list of all campaigns.
     - PrivacyPolicyPage.tsx: The page displaying the site's privacy policy.
     - TermsOfServicePage.tsx: The page displaying the site's terms of service.
-    - UpdatePasswordPage.tsx: The page where users can set a new password after following a reset link.
 
     services/
     ---------
@@ -137,19 +136,18 @@ The application follows a modern Jamstack architecture, separating the frontend 
 
   Candidate Journey
   -----------------
-  1. Register: Creates an account on the `AuthPage` and verifies their email.
+  1. Register: Creates an account on the `AuthPage`.
   2. Login: Logs into their account.
   3. Create: Navigates to `/create-campaign` and fills out the form, uploading their portrait and resume.
-  4. Manage: Views all their created campaigns on the `DashboardPage`.
+  4. Manage: Finds their campaigns by using the search function on the homepage.
   5. Edit/Delete: Clicks on a campaign to view it, then uses the "Edit" or "Delete" buttons on the `CampaignDetailPage` to manage it.
 
 
 6. Security
 -----------
-- Authentication: Handled by Supabase Auth, which provides secure password hashing, JWT session management, and email verification.
+- Authentication: Handled by Supabase Auth, which provides secure password hashing and JWT session management.
 - Authorization (RLS): Supabase's Row-Level Security (RLS) is used to enforce data access rules. Policies are configured in the Supabase dashboard to ensure users can only update or delete campaigns where the `user_id` column matches their own `auth.uid()`.
 - Content Moderation: User-generated content is checked against Google's safety policies via the Gemini API to prevent hate speech, harassment, etc.
-- XSS Prevention: All user-generated rich text content is sanitized using `DOMPurify` on the client side before being rendered with `dangerouslySetInnerHTML`.
 - Brute-Force Protection: The `AuthPage` implements client-side rate limiting to slow down repeated, failed login or password reset attempts.
 - Spam Prevention: Public-facing email addresses are constructed using client-side JavaScript to deter simple web scrapers.
 
@@ -160,10 +158,9 @@ The application follows a modern Jamstack architecture, separating the frontend 
 - Language: TypeScript
 - Routing: React Router DOM `^7.8.2`
 - UI/Styling: Bootstrap `5.3.3`, Custom CSS
+- Text Editor: Quill.js `2.0.2`
 - Backend Service: Supabase JS Client `^2.56.0`
 - AI Service: Google Gemini JS SDK `^1.15.0`
-- Rich Text Editor: Quill.js `2.0.2`
-- Security Sanitizer: DOMPurify `3.0.11`
 
 
 8. Vital Information for Developers
@@ -180,4 +177,14 @@ The application follows a modern Jamstack architecture, separating the frontend 
   3. Database Table: Create a table named `campaigns` with columns that match the `Campaign` interface in `types.ts`.
   4. RLS Policies: Enable Row-Level Security on the `campaigns` table. Create policies that allow public `SELECT` access but restrict `INSERT`, `UPDATE`, and `DELETE` operations to the record owner (e.g., `auth.uid() = user_id`).
   5. Storage Buckets: Create two storage buckets: `portraits` and `resumes`. Configure them for public read access.
-  6. Database Keep-Alive: The `App.tsx` contains a `useEffect` hook that sends a small query to the database every 24 hours. This is crucial for preventing Supabase's free-tier projects from being paused due to inactivity.
+  6. Database Keep-Alive (Free Tier): Supabase's free tier pauses projects after 7 days of inactivity. To prevent this, you must set up an external cron job. For a simple and reliable solution, see the detailed guide in `cron-job-setup.md`.
+
+
+9. Deprecated Files
+-------------------
+The following files are empty, unused, and are slated for deletion in a future cleanup. They are not imported by any part of the application and can be safely ignored.
+
+- `components/WelcomeModal.tsx`
+- `pages/UpdatePasswordPage.tsx`
+- `components/SupabaseNotConfigured.tsx`
+- `pages/BlogPostPage.tsx`

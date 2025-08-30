@@ -12,9 +12,6 @@ import Spinner from '../components/Spinner';
 import { usePageMetadata } from '../hooks/usePageMetadata';
 import { getStorageInfo, createSnippet } from '../lib/storageHelper';
 
-// Makes DOMPurify available from the global scope (loaded via CDN in index.html)
-declare const DOMPurify: any;
-
 /**
  * Displays the detailed view of a single campaign.
  * It fetches the campaign data based on the ID from the URL.
@@ -54,20 +51,19 @@ export default function CampaignDetailPage() {
                 .from('campaigns')
                 .select(`*`)
                 .eq('id', id)
-                .single();
+                .maybeSingle(); // Use .maybeSingle() to gracefully handle 0 rows
             
             if (dbError) {
-                // Differentiate between a "not found" error and other, unexpected errors.
-                // Supabase's .single() returns error code 'PGRST116' when no rows are found.
-                if (dbError.code === 'PGRST116') {
-                    setCampaign(null); // This is the "not found" case, not an actual error.
+                console.error(`Error fetching campaign with id '${id}':`, dbError.message, dbError);
+                if (dbError.message.includes('Failed to fetch')) {
+                    setError("Network Error: Could not connect to the database. This is often a CORS (Cross-Origin Resource Sharing) issue. Please ensure this website's URL is added to your Supabase project's 'Allowed Origins' list in the API settings.");
                 } else {
-                    // This is a genuine network or database error.
-                    console.error(`Error fetching campaign with id '${id}':`, dbError.message, dbError);
-                    setError(`Failed to load campaign. An unexpected error occurred.`);
+                    setError(`Failed to load campaign. An unexpected error occurred: ${dbError.message}`);
                 }
-            } else if (data) {
-                setCampaign(data as Campaign);
+            } else {
+                // .maybeSingle() returns null for data if no row is found.
+                // This is the expected behavior for a non-existent campaign.
+                setCampaign(data as Campaign | null);
             }
             
             setLoading(false);
@@ -130,10 +126,36 @@ export default function CampaignDetailPage() {
     if (loading) return <Spinner />;
     
     if (error) {
+        const isCorsError = error.includes('CORS');
         return (
-            <div className="alert alert-danger text-center mt-5">
-                <h5 className="alert-heading">An Error Occurred</h5>
-                <p>{error}</p>
+            <div className="d-flex align-items-center justify-content-center" style={{ minHeight: '60vh' }}>
+                <div className="card bg-body-secondary p-4 p-md-5 shadow-lg text-center" style={{ maxWidth: '600px' }}>
+                    <div className="card-body">
+                         <svg xmlns="http://www.w3.org/2000/svg" width="64" height="64" fill="currentColor" className="bi bi-wifi-off text-danger mb-4" viewBox="0 0 16 16">
+                            <path d="M10.706 3.294A12.545 12.545 0 0 0 8 3C5.259 3 2.723 3.882.663 5.379a.485.485 0 0 0-.048.736.518.518 0 0 0 .668.05A11.448 11.448 0 0 1 8 4c2.507 0 4.863.695 6.706 1.855a.5.5 0 0 0 .62-.728A12.541 12.541 0 0 0 10.706 3.294z"/>
+                            <path d="M.918 8.025A11.45 11.45 0 0 1 8 7c.258 0 .51.008.753.025l-1.07.922a.5.5 0 0 0 .176.846l2.311-1.238a.5.5 0 0 0 .176-.846L8.943 6.04a.5.5 0 0 0-.596.026l-.05.044a.5.5 0 0 0-.176.846L8.082 7.01a.5.5 0 0 0 .22.84L.918 8.026zM.734 5.841l.707-.707 12.728 12.728-.707.707L.734 5.841z"/>
+                            <path d="M6.924 10.115a6.474 6.474 0 0 0-1.423.656 8.448 8.448 0 0 0-2.313 1.579.485.485 0 0 0-.048.736.518.518 0 0 0 .668.05A7.447 7.447 0 0 1 8 10c.84 0 1.649.167 2.407.473l-1.355.918a.5.5 0 0 0 .176.846l2.311-1.238a.5.5 0 0 0 .176-.846L8.943 9.04a.5.5 0 0 0-.596.026l-.05.044a.5.5 0 0 0-.176.846l-.333.285a.5.5 0 0 0 .22.84l-1.55-1.045a.5.5 0 0 0-.176-.846z"/>
+                        </svg>
+                        <h1 className="card-title h4 fw-bold text-danger mb-3">
+                            {isCorsError ? 'Connection Error' : 'An Error Occurred'}
+                        </h1>
+                        <p className="text-secondary">{error}</p>
+                        {isCorsError && (
+                            <div className="alert alert-warning mt-4 text-start">
+                                <p className="fw-bold mb-1">How to fix this:</p>
+                                <ol className="mb-0 ps-3">
+                                    <li className="mb-1">Go to your project dashboard on <strong>supabase.com</strong>.</li>
+                                    <li className="mb-1">Navigate to <strong>Settings</strong> &gt; <strong>API</strong>.</li>
+                                    <li className="mb-1">Under <strong>CORS settings</strong>, add your application's full URL to the list of allowed origins.</li>
+                                    <li>Save your changes and refresh this page.</li>
+                                </ol>
+                            </div>
+                        )}
+                        <a href="/" className="btn btn-primary mt-3">
+                            Go to Homepage
+                        </a>
+                    </div>
+                </div>
             </div>
         );
     }
@@ -143,8 +165,8 @@ export default function CampaignDetailPage() {
             <div className="d-flex align-items-center justify-content-center" style={{ minHeight: '60vh' }}>
                 <div className="card bg-body-secondary p-4 p-md-5 shadow-lg text-center" style={{ maxWidth: '600px' }}>
                     <div className="card-body">
-                         <svg xmlns="http://www.w3.org/2000/svg" width="64" height="64" fill="currentColor" className="bi bi-file-earmark-x-fill text-warning mb-4" viewBox="0 0 16 16">
-                            <path d="M9.293 0H4a2 2 0 0 0-2 2v12a2 2 0 0 0 2 2h8a2 2 0 0 0 2-2V4.707A1 1 0 0 0 13.707 4L10 .293A1 1 0 0 0 9.293 0M9.5 3.5v-2l3 3h-2a1 1 0 0 1-1-1M6.854 7.146a.5.5 0 1 1 .708.708L7.94 8.5l-.375.375a.5.5 0 0 1-.708.708L7.56 9.207l-.375.375a.5.5 0 1 1-.708-.708L7.172 8.5l.375-.375a.5.5 0 0 1 .708-.708L8.276 7.857l.375-.375a.5.5 0 1 1 .708.708L8.646 8.5l.375.375a.5.5 0 1 1-.708.708L8.276 9.207l.375.375a.5.5 0 0 1-.708.708L7.56 8.879l-.375.375a.5.5 0 1 1-.708-.708L7.172 8.5z"/>
+                         <svg xmlns="http://www.w3.org/2000/svg" width="64" height="64" fill="currentColor" className="bi bi-question-circle-fill text-warning mb-4" viewBox="0 0 16 16">
+                            <path d="M16 8A8 8 0 1 1 0 8a8 8 0 0 1 16 0M5.496 6.033h.825c.138 0 .248-.113.266-.25.09-.656.54-1.134 1.342-1.134.686 0 1.314.343 1.314 1.168 0 .635-.374.927-.965 1.371-.673.489-1.206 1.06-1.168 1.987l.003.217a.25.25 0 0 0 .25.246h.811a.25.25 0 0 0 .25-.25v-.105c0-.718.273-.927 1.01-1.486.609-.463 1.244-.977 1.244-2.056 0-1.511-1.276-2.241-2.673-2.241-1.267 0-2.655.59-2.75 2.286a.237.237 0 0 0 .241.247m2.325 6.443c.61 0 1.029-.394 1.029-.927 0-.552-.42-.94-1.029-.94-.584 0-1.009.388-1.009.94 0 .533.425.927 1.01.927"/>
                         </svg>
                         <h1 className="card-title h4 fw-bold mb-3">Campaign Not Found</h1>
                         <p className="text-secondary">
@@ -164,9 +186,6 @@ export default function CampaignDetailPage() {
     const optimizedImageUrl = campaign.portrait_url 
         ? transformImageUrl(campaign.portrait_url, { width: 384, height: 384, resize: 'contain' })
         : 'https://placehold.co/192x192/343a40/6c757d?text=No+Image';
-
-    // Sanitize user-generated content before rendering to prevent XSS attacks
-    const sanitizedPolicies = DOMPurify.sanitize(campaign.proposed_policies);
 
     return (
         <article className="card bg-body-secondary p-4 p-md-5 shadow-lg my-4">
@@ -221,7 +240,11 @@ export default function CampaignDetailPage() {
                 </div>
                 
                 <h2 className="h5 fw-semibold border-bottom border-secondary pb-2 my-4 mt-5">Proposed Policies</h2>
-                <div className="policy-content" dangerouslySetInnerHTML={{ __html: sanitizedPolicies }} />
+                <div 
+                    className="policy-content ql-editor"
+                    dangerouslySetInnerHTML={{ __html: campaign.proposed_policies }}
+                >
+                </div>
             </div>
 
             <ConfirmModal

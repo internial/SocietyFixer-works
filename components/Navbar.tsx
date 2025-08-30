@@ -142,10 +142,10 @@ export default function Navbar() {
                                 <a className="nav-link dropdown-toggle" href="#" role="button" data-bs-toggle="dropdown" aria-expanded="false">
                                     Account
                                 </a>
-                                <ul className="dropdown-menu">
+                                <ul className="dropdown-menu dropdown-menu-end">
                                     <li><h6 className="dropdown-header text-sm text-secondary">{user.email}</h6></li>
-                                    <li><Link className="dropdown-item" to="/dashboard">My Campaigns</Link></li>
                                     <li><hr className="dropdown-divider" /></li>
+                                    <li><Link to="/dashboard" className="dropdown-item">My Dashboard</Link></li>
                                     <li><button onClick={() => { closeMenu(); signOut(); }} className="dropdown-item">Logout</button></li>
                                 </ul>
                             </li>

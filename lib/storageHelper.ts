@@ -23,20 +23,15 @@ export const getStorageInfo = (url: string): { bucket: string; path: string } | 
 };
 
 /**
- * Creates a plain text snippet from HTML content.
- * @param {string} html The HTML string.
+ * Creates a plain text snippet from a string, stripping any HTML content.
+ * @param {string} text The input string, potentially containing HTML.
  * @param {number} maxLength The maximum length of the snippet.
  * @returns {string} A plain text string.
  */
-export const createSnippet = (html: string, maxLength: number = 160): string => {
-    if (!html) return '';
-    // This function must run in a browser environment to use DOMParser
-    if (typeof window === 'undefined' || typeof window.DOMParser === 'undefined') {
-        // Fallback for non-browser environments, just strip tags crudely
-        return html.replace(/<[^>]+>/g, '').trim().slice(0, maxLength);
-    }
-    // Strip HTML tags and decode entities
-    const text = new window.DOMParser().parseFromString(html, 'text/html').body.textContent || '';
-    // Trim and cut to length
-    return text.trim().slice(0, maxLength);
+export const createSnippet = (text: string, maxLength: number = 160): string => {
+    if (!text) return '';
+    // Replace multiple whitespace chars with a single space and trim
+    const plainText = text.replace(/\s+/g, ' ').trim();
+    // Return a snippet of the plain text, adding an ellipsis if truncated
+    return plainText.length > maxLength ? `${plainText.substring(0, maxLength)}...` : plainText;
 }
