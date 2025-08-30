@@ -14,9 +14,10 @@ import { transformImageUrl } from '../lib/imageHelper';
  * @returns {React.JSX.Element} The rendered campaign card component.
  */
 export default function CampaignCard({ campaign }: { campaign: Campaign }) {
+    // Request a square image and use 'contain' to fit the entire image without cropping.
     const optimizedImageUrl = campaign.portrait_url 
-        ? transformImageUrl(campaign.portrait_url, { width: 400, height: 200, resize: 'contain' })
-        : 'https://placehold.co/400x200/343a40/6c757d?text=No+Image';
+        ? transformImageUrl(campaign.portrait_url, { width: 400, height: 400, resize: 'contain' })
+        : 'https://placehold.co/400x400/343a40/6c757d?text=No+Image';
         
     return (
         <div className="col">
@@ -25,7 +26,9 @@ export default function CampaignCard({ campaign }: { campaign: Campaign }) {
                     className="card-img-top" 
                     src={optimizedImageUrl} 
                     alt={`${campaign.candidate_name} portrait`} 
-                    style={{ height: '200px', objectFit: 'contain', backgroundColor: 'var(--bs-body-tertiary)' }} 
+                    // Use object-fit: contain to show the entire image without cropping.
+                    // Increased height for better portrait display.
+                    style={{ height: '220px', objectFit: 'contain', backgroundColor: 'var(--bs-body-tertiary)' }} 
                 />
                 <div className="card-body">
                     <h5 className="card-title text-light">{campaign.candidate_name}</h5>
@@ -33,7 +36,7 @@ export default function CampaignCard({ campaign }: { campaign: Campaign }) {
                     <p className="card-text text-body-secondary">{campaign.election_region} &bull; {campaign.scope}</p>
                 </div>
                 <div className="card-footer bg-transparent border-top-secondary">
-                    <small className="text-body-secondary">Deadline: {new Date(campaign.election_deadline).toLocaleDateString()}</small>
+                    <small className="text-body-secondary">Election Deadline: {new Date(campaign.election_deadline).toLocaleDateString()}</small>
                 </div>
             </Link>
         </div>

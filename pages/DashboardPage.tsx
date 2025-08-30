@@ -58,7 +58,7 @@ export default function DashboardPage() {
                 </div>
             ) : (
                 <>
-                    <div className="row row-cols-1 row-cols-md-2 row-cols-lg-3 g-4">
+                    <div className="row row-cols-1 row-cols-md-2 row-cols-lg-3 row-cols-xl-4 g-4">
                         {campaigns.map(campaign => (
                             <CampaignCard key={campaign.id} campaign={campaign} />
                         ))}
@@ -77,9 +77,6 @@ export default function DashboardPage() {
                                     </>
                                 ) : 'Load More'}
                             </button>
-                        )}
-                        {!hasMore && campaigns.length > 0 && (
-                            <p className="text-secondary" role="status">You've reached the end.</p>
                         )}
                     </div>
                 </>

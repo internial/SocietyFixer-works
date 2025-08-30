@@ -168,7 +168,7 @@ export default function CampaignForm({ onSubmit, initialData, isSubmitting = fal
                 <FormField id="election_name" name="election_name" label="Election Name" value={formData.election_name} onChange={handleChange} error={errors.election_name} required />
                 <FormField id="election_deadline" name="election_deadline" label="Election Deadline" type="date" value={formData.election_deadline} onChange={handleChange} error={errors.election_deadline} required />
                 
-                <fieldset className="col-md-6">
+                <fieldset className="col-12">
                      <legend className="form-label fs-6">Scope</legend>
                     <div className="d-flex pt-2">
                         {['Local', 'State', 'National'].map(scope => (
@@ -180,7 +180,7 @@ export default function CampaignForm({ onSubmit, initialData, isSubmitting = fal
                     </div>
                 </fieldset>
 
-                <div className="col-md-6">
+                <div className="col-12">
                     <label htmlFor="election_region" className="form-label">Election Region</label>
                     <div id="election_region-help" className="form-text mb-2">
                         The geographic area where an election is held. Only registered voters within this region are eligible to vote. Enter the city for local elections, the state for state elections, or the country for national elections.
@@ -225,7 +225,7 @@ export default function CampaignForm({ onSubmit, initialData, isSubmitting = fal
                     </datalist>
                 </FormField>
                 
-                <fieldset className="col-md-6">
+                <fieldset className="col-12">
                     <legend className="form-label fs-6">Gender</legend>
                     <div className="d-flex flex-wrap pt-2">
                         {['Male', 'Female', 'Non-binary'].map(option => (

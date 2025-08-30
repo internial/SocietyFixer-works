@@ -41,7 +41,7 @@ export const FormField: React.FC<FormFieldProps> = ({
     const describedByIds = `${error ? `${id}-error` : ''} ${helpText ? `${id}-help` : ''}`.trim();
 
     return (
-        <div className="col-md-6">
+        <div className="col-12">
             <label htmlFor={id} className="form-label">{label}</label>
             <input
                 type={type}
