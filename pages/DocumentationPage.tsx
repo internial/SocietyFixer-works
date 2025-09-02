@@ -182,7 +182,6 @@ The application follows a modern Jamstack architecture, separating the frontend 
   3. Database Table: Create a table named \`campaigns\` with columns that match the \`Campaign\` interface in \`types.ts\`.
   4. RLS Policies: Enable Row-Level Security on the \`campaigns\` table. Create policies that allow public \`SELECT\` access but restrict \`INSERT\`, \`UPDATE\`, and \`DELETE\` operations to the record owner (e.g., \`auth.uid() = user_id\`).
   5. Storage Buckets: Create two storage buckets: \`portraits\` and \`resumes\`. Configure them for public read access.
-  6. Database Keep-Alive (Free Tier): Supabase's free tier pauses projects after 7 days of inactivity. To prevent this, you must set up an external cron job. For a simple and reliable solution, see the detailed guide in \`cron-job-setup.md\`.
 
 
 9. Deprecated Files
